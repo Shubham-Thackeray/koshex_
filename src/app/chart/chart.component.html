@@ -1,0 +1,233 @@
+<div class="container-fluid container-outer">
+  <div class="row" cdkDropListGroup>
+    <div
+      class="col-8"
+      (cdkDropListDropped)="drop($event)"
+      (cdkDropListEntered)="drag($event)"
+    >
+      <div
+        *ngIf="showChart"
+        echarts
+        (chartInit)="onChartReady($event)"
+        (chartMouseOver)="onMouseIn($event)"
+        (chartMouseOut)="onMouseOut($event)"
+        [options]="options"
+        style="height: 600px"
+        class="container-chart"
+      ></div>
+
+      <div *ngIf="isDropped" class="outer-modal-container">
+        <div class="cardAdddLE">
+          <form [formGroup]="formAddLE">
+            <div class="heading">Add Goal</div>
+            <div class="container-1">
+              <div class="container-2">
+                <!-- modal init issue --workaound -->
+                <input style="display: none" />
+                <div class="Input-Label">Goal title</div>
+                <div class="container-3">{{ formAddLE.value.title }}</div>
+                <div class="Goal-priority">Goal priority (not integrated)</div>
+                <div class="row">
+                  <div class="col-4 p-0-5">
+                    <div class="container-4">
+                      <img src="../../assets/charity.png" />Need
+                    </div>
+                  </div>
+                  <div class="col-4 p-0-5">
+                    <div class="container-5">
+                      <img src="../../assets/charity.png" />Need
+                    </div>
+                  </div>
+                  <div class="col-4 p-0-5">
+                    <div class="container-5">
+                      <img src="../../assets/charity.png" />Need
+                    </div>
+                  </div>
+                </div>
+                <div class="Goal-priority">Goal priority (Integrated))</div>
+                <div class="row">
+                  <div class="col-6 p-0-5">
+                    <app-custom-pm-input
+                      formControlName="amount"
+                      type="lac"
+                    ></app-custom-pm-input>
+                  </div>
+                  <div class="col-6 p-0-5">
+                    <app-custom-pm-input
+                      formControlName="year"
+                      type="Jan"
+                    ></app-custom-pm-input>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-sm" (click)="closeModal()">
+              CLEAR
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-primary"
+              (click)="addLE(); closeModal()"
+            >
+              SAVE
+            </button>
+          </div>
+        </div>
+      </div>
+      <!--  -->
+      <div class="tooltip-outer-container">
+        <!-- simple tooltip -->
+        <div
+          *ngIf="
+            Current.isActive && mapTooltip(Current.x).length == 0 && !draging && !isDropped
+          "
+          [style.left]="Current.offsetX + 'px'"
+          [style.top]="Current.offsetY + 'px'"
+          class="tooltip-container tooltip1 dark shadow fadein right flat-tooltip arrow-left"
+        >
+          <div class="row tooltip-black">
+            <div class="col-6">
+              <span> Age</span><br />
+              <span class="figures">{{ Current.x }} </span>
+            </div>
+            <div class="col-6">
+              <span> Year</span><br /><span class="figures"
+                >{{ 2021 + Current.x - currentAge }}
+              </span>
+            </div>
+            <span
+              style="
+                border-bottom: 1px solid rgba(32, 30, 69, 0.6);
+                width: 100%;
+                margin: 2px;
+              "
+            ></span>
+            <div class="col-6">
+              <span> Net worth</span><br /><span class="figures"
+                >₹ {{ Current.y }} lac</span
+              >
+            </div>
+            <div class="col-6">
+              <span> Savings</span><br /><span class="figures">-</span>
+            </div>
+          </div>
+        </div>
+        <!-- blue tooltip -->
+        <div
+          *ngIf="
+            (Current.isActive &&
+              mapTooltip(Current.x).length > 0 &&
+              !draging && !isDropped)  ||
+            mouseOver
+          "
+          [style.left]="Current.offsetX + 'px'"
+          [style.top]="Current.offsetY + 'px'"
+          class="tooltip-container"
+        >
+          <div
+            class="tooltip-blue"
+            style="pointer-events: visible"
+            (mouseenter)="mouseOver = true"
+            (mouseleave)="mouseOver = false; currentSet(0, 0, 0, 0, false)"
+            *ngFor="let item of mapTooltip(Current.x)"
+          >
+            <!-- <div > -->
+            <div class="row" style="padding: 0 15px">
+              <div class="bg-blue col-8">
+                <span class="title">
+                  {{ item.title }}
+                </span>
+              </div>
+              <div class="col-4" (click)="delete(item)">
+                <div class="delete">
+                  <img src="../../assets/icons8-delete-bin-24.png" />
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <div class="ta-center m-10 subtitle">
+                  Amount ({{ item.amount / 10000 - Current.y }}'%)
+                </div>
+                <div class="progress">
+                  <div
+                    class="progress-bar"
+                    [style.width]="item.amount / 10000 - Current.y + '%'"
+                  ></div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="ta-center m-10 subtitle">
+                  Timeline ({{ 100 - Current.y }}%)
+                </div>
+                <div class="progress">
+                  <div
+                    class="progress-bar"
+                    [style.width]="100 - Current.y + '%'"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="info-panel">
+        <div class="row">
+          <div class="col-4">
+            <div class="retire-at">Retire at</div>
+            <div class="-age">60 age</div>
+          </div>
+          <div class="col-8">
+            <div class="retire-at">Financial end</div>
+            <div class="-age">90 age</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-8 mt-10">
+            <div class="retire-at">Retirement net worth</div>
+            <div class="-networth">₹ 14.2 Lac</div>
+          </div>
+        </div>
+      </div>
+      <div class="life-event-card">
+        <div class="le-head">Add life events</div>
+        <div class="le-body">
+          <div>
+            <div
+              cdkDropList
+              [cdkDropListData]="lifeEvents"
+              (cdkDropListDropped)="drop($event)"
+              cdkDropListSortingDisabled
+              class="row"
+            >
+              <div
+                *ngFor="let item of lifeEvents"
+                class="col-4 le-card-outer"
+                (cdkDragStarted)="drag($event)"
+                cdkDrag
+              >
+                <div class="le-card">
+                  <img src="{{ item?.image }}" />
+                  <div class="le-card-title">{{ item.type }}</div>
+                </div>
+                <div
+                  *cdkDragPreview
+                  [ngClass]="Current.isActive ? 'green' : ''"
+                  class="placeholderLE le-card"
+                >
+                  <img src="{{ item?.image }}" />
+                  <div class="le-card-title">{{ item.type }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

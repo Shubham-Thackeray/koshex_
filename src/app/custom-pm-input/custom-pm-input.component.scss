@@ -1,0 +1,82 @@
+.pm-container{
+    
+    span {
+      cursor: pointer;
+    }
+    .number {
+        width: 158px;
+        height: 42px;
+        padding: 6px;
+    //   margin: 100px; padding: 6px;
+      border-radius: 6px;
+      box-shadow: inset 2px 2px 4px 0 rgba(15, 31, 77, 0.2), inset -2px -2px 4px 0 #ffffff;
+      background-color: #f0f4ff
+    }
+    .minus,
+    .plus {
+        display: inline-block;
+        padding: 3px 10px;
+        width: 30px;
+        height: 30px;
+        // margin: 5px 6px 0 0;
+        // padding: 3px;
+        cursor: pointer;
+        border-radius: 4px;
+        box-shadow: 2px 2px 2px 0 rgba(191, 202, 217, 0.9), -2px -2px 2px 0 #ffffff;
+        border: solid 1px #ebeff5;
+        background-color: #f0f4ff;
+    //   width: 20px;
+    //   height: 34px;
+    //   background: #f2f2f2;
+    //   border-radius: 4px;
+    //   padding: 4px 0px;
+    // //   padding: 8px 5px 8px 5px;
+    //   border: 1px solid #ddd;
+    //   display: inline-block;
+    //   vertical-align: middle;
+    //   text-align: center;
+    }
+    .input-container {
+      height: 34px;
+      width: 86px;
+      text-align: center;
+    //   margin: 0px 6px;
+    //   border: 1px solid #ddd;
+      border-radius: 4px;
+      display: inline-block;
+      vertical-align: middle;
+      font-family: Poppins;
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.29;
+      letter-spacing: 0.25px;
+      text-align: center;
+      color: #201e45;
+    }
+    
+    input{
+        margin: 0;
+        height: 32px;
+        width: 50px;
+        border: none;
+        text-align: center;
+        // border-radius: 4px;
+        display: inline-block;
+        // vertical-align: middle;
+        background-color: transparent;
+    }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    /* Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+    input:focus{
+        outline: none !important;
+    }
+    }

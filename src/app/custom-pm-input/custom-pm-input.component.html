@@ -1,0 +1,15 @@
+<div class="pm-container">
+    <div class="number">
+      <div (click)="subtract()" class="minus">-</div>
+      <div class="input-container">
+        <input
+          type="number"
+          [formControl]="ctrl"
+          (change)="change()"
+        />
+        {{ type }}
+      </div>
+      <div (click)="add()" class="plus">+</div>
+    </div>
+  </div>
+  
