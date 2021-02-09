@@ -1,22 +1,19 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import * as util from 'zrender/lib/core/util';
-import { EChartsOption } from 'echarts';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 const SymbolSize = 200;
 
-// export interface curentPointer{x:any,y:any,offsetX:any,offsetY:any,isActive:boolean};
+// TODO --lint
+// TODO minimize code and take data to comman file
+export interface curentPointer{x:any,y:any,offsetX:any,offsetY:any,isActive:boolean};
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss'],
 })
 export class ChartComponent implements OnDestroy {
-  constructor(
-    // public modalservice: NgbModal,
-    private formBuilder: FormBuilder
-  ) {}
+  @ViewChild('customContent', { static: true }) customContent: ElementRef;
   formAddLE: FormGroup = this.formBuilder.group({
     amount: [12.6, [Validators.required]],
     year: [2030, [Validators.required]],
@@ -26,11 +23,14 @@ export class ChartComponent implements OnDestroy {
     age: '',
   });
 
-  Current = { x: 0, y: 0, offsetX: 0, offsetY: 0, isActive: false };
+  Current:curentPointer = { x: 0, y: 0, offsetX: 0, offsetY: 0, isActive: false };
   draging: boolean = false;
   isDropped: boolean = false;
   mouseOver: boolean = false;
+  chart: any;
+  showChart = true;
   currentAge = 28;
+  // --considered-data
   Data = [
     [28, 10],
     [32, 25],
@@ -45,9 +45,7 @@ export class ChartComponent implements OnDestroy {
     [80, 60],
     [90, 30],
   ];
-  @ViewChild('customContent', { static: true }) customContent: ElementRef;
-  chart: any;
-  showChart = true;
+  // --considered-data
   lifeEvents = [
     {
       title: 'buy a new house',
@@ -150,10 +148,6 @@ export class ChartComponent implements OnDestroy {
         type: 'line',
         smooth: true,
         data: this.Data,
-        // symbol: function (data, params) {
-        //   return
-        // },
-
         symbolPosition: 'end',
         label: {
           normal: {
@@ -225,45 +219,17 @@ export class ChartComponent implements OnDestroy {
     ],
   };
 
-  ngOnInit(): void {}
+  constructor(private formBuilder: FormBuilder) {}
+
   ngOnDestroy() {
     if (this.updatePosition) {
-      window.removeEventListener("resize", this.updatePosition);
+      window.removeEventListener('resize', this.updatePosition);
     }
   }
+
   onChartReady(myChart: any) {
     this.chart = myChart;
-    const onPointDragging = function (dataIndex) {
-      this.Data[dataIndex] = myChart.convertFromPixel(
-        { gridIndex: 0 },
-        this.position
-      ) as number[];
-
-      // Update data
-      myChart.setOption({
-        series: [
-          {
-            id: 'a',
-            data: this.Data,
-          },
-        ],
-      });
-    };
-
-    const showTooltip = (dataIndex) => {
-      myChart.dispatchAction({
-        type: 'showTip',
-        seriesIndex: 0,
-        dataIndex,
-      });
-    };
-
-    const hideTooltip = () => {
-      myChart.dispatchAction({
-        type: 'hideTip',
-      });
-    };
-
+  
     const updatePosition = () => {
       myChart.setOption({
         graphic: util.map(this.Data, (item) => ({
@@ -277,37 +243,6 @@ export class ChartComponent implements OnDestroy {
 
     // save handler and remove it on destroy
     this.updatePosition = updatePosition;
-
-    setTimeout(() => {
-      myChart.setOption({
-        graphic: util.map(this.Data, (item, dataIndex) => {
-          return {
-            type: 'circle',
-            position: myChart.convertToPixel({ gridIndex: 0 }, item),
-            shape: {
-              cx: 0,
-              cy: 0,
-              r: SymbolSize / 2,
-            },
-            invisible: true,
-            draggable: false,
-            ondrag: util.curry<(dataIndex: any) => void, number>(
-              onPointDragging,
-              dataIndex
-            ),
-            onmousemove: util.curry<(dataIndex: any) => void, number>(
-              showTooltip,
-              dataIndex
-            ),
-            onmouseout: util.curry<(dataIndex: any) => void, number>(
-              hideTooltip,
-              dataIndex
-            ),
-            z: 100,
-          };
-        }),
-      });
-    }, 10);
   }
 
   setlabel(params) {
@@ -320,13 +255,12 @@ export class ChartComponent implements OnDestroy {
       });
   }
 
-  drag(e) {
+  drag(_1) {
     this.draging = true;
     this.isDropped = false;
   }
 
   drop(event: CdkDragDrop<string[]>) {
- 
     if (this.Current.x) {
       this.isDropped = true;
       this.draging = false;
@@ -345,9 +279,6 @@ export class ChartComponent implements OnDestroy {
     }
   }
 
-  allowDrop(e) {
-    e.preventDefault();
-  }
 
   addLE() {
     this.showChart = false;
@@ -362,11 +293,13 @@ export class ChartComponent implements OnDestroy {
       age: age,
     });
 
-    const chartdata = JSON.parse(JSON.stringify(this.Data));
-    if (this.Data.findIndex((x) => x[0] === age) == -1) {
-      let index = this.Data.findIndex((x) => x[0] > age);
-      this.Data.splice(index, 0, [age, this.getRndInteger(12, 80)]);
-    }
+    // uncomment to handle drop anywhere on chart
+    // if (this.Data.findIndex((x) => x[0] === age) == -1) {
+    //   let index = this.Data.findIndex((x) => x[0] > age);
+    //   this.Data.splice(index, 0, [age, this.getRndInteger(12, 80)]);
+    // }
+
+    // do not remove --for refresh
     setTimeout(() => {
       this.showChart = true;
     }, 10);
@@ -429,6 +362,7 @@ export class ChartComponent implements OnDestroy {
       this.currentSet(0, 0, 0, 0, false);
       this.labelData.splice(index, 1);
     }
+
     setTimeout(() => {
       // this.currentSet(0,0,0,0,false);
       this.showChart = true;
